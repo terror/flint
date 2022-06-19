@@ -1,0 +1,12 @@
+name: rlint
+language: Rust
+rules:
+  env:
+    message: Calls to std::env::* should not use string literals
+    query: |
+      ((call_expression
+        function: (_) @fn-name
+        arguments: (arguments (string_literal))) @raise
+      (#match? @fn-name "(std::|)env::(var|remove_var)"))
+    captures:
+      - raise
