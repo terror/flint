@@ -14,7 +14,7 @@ mod walker;
 
 fn main() {
   if let Err(error) = Arguments::parse().run() {
-    eprintln!("error: {error}");
+    eprintln!("{}: {error}", "error".red());
     process::exit(1);
   }
 }

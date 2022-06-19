@@ -55,9 +55,9 @@ impl Parser {
 
         println!(
           "{}:{}:{}: {} - {}\n{}|\n{} | {}{}\n{}|",
-          config.path.display(),
-          range.start_point.row,
-          range.start_point.column,
+          format!("{}", config.path.display()).yellow(),
+          format!("{}", range.start_point.row).bold(),
+          format!("{}", range.start_point.column).bold(),
           config.name,
           config.rule.message,
           format_args!("{:1$}", " ", pad),

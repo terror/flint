@@ -2,6 +2,7 @@ pub(crate) use std::{collections::HashMap, env, fs, path::PathBuf, process};
 
 pub(crate) use {
   clap::Parser as Clap,
+  colored::*,
   dirs::home_dir,
   serde::Deserialize,
   tree_sitter::{
