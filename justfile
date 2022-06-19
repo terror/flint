@@ -13,7 +13,7 @@ clippy:
   cargo clippy --all-targets --all-features
 
 fmt:
-  cargo +nightly fmt
+  cargo fmt --all
 
 fmt-check:
   cargo +nightly fmt --all -- --check
