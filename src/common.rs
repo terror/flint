@@ -13,7 +13,12 @@ pub(crate) use {
 };
 
 extern "C" {
+  pub(crate) fn tree_sitter_bash() -> TreeSitterLanguage;
+  pub(crate) fn tree_sitter_c() -> TreeSitterLanguage;
+  pub(crate) fn tree_sitter_c_sharp() -> TreeSitterLanguage;
+  pub(crate) fn tree_sitter_cpp() -> TreeSitterLanguage;
   pub(crate) fn tree_sitter_rust() -> TreeSitterLanguage;
+  pub(crate) fn tree_sitter_yaml() -> TreeSitterLanguage;
 }
 
 pub(crate) use crate::{

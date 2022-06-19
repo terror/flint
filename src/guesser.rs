@@ -29,7 +29,12 @@ impl Guesser {
 
   fn from_extension(&self, extension: &str) -> Option<Language> {
     match extension {
+      "c" => Some(C),
+      "cpp" => Some(Cpp),
+      "cs" => Some(CSharp),
       "rs" => Some(Rust),
+      "sh" | "bash" => Some(Bash),
+      "yaml" | "yml" => Some(Yaml),
       _ => None,
     }
   }
