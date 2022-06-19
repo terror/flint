@@ -54,7 +54,7 @@ impl Parser {
         let pad = range.start_point.row.to_string().len() + 1;
 
         println!(
-          "{}:{}:{}: {} - {}\n{}|\n{} | {}\n{}|",
+          "{}:{}:{}: {} - {}\n{}|\n{} | {}{}\n{}|",
           config.path.display(),
           range.start_point.row,
           range.start_point.column,
@@ -62,6 +62,7 @@ impl Parser {
           config.rule.message,
           format_args!("{:1$}", " ", pad),
           range.start_point.row,
+          format_args!("{:1$}", " ", range.start_point.column),
           &source[range.start_byte..range.end_byte],
           format_args!("{:1$}", " ", pad),
         );
