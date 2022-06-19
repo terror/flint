@@ -18,6 +18,8 @@ impl Parser {
   }
 
   pub(crate) fn query(&mut self, config: QueryConfig) -> Result {
+    let source = fs::read_to_string(config.path.clone())?;
+
     let query = Query::new(
       self
         .parser
@@ -26,9 +28,7 @@ impl Parser {
       &config.rule.query,
     )?;
 
-    let tree = self
-      .parse(&config.source, None)
-      .ok_or("Failed to parse source")?;
+    let tree = self.parse(&source, None).ok_or("Failed to parse source")?;
 
     let mut cursor = QueryCursor::new();
 
@@ -43,9 +43,7 @@ impl Parser {
       })
       .collect::<Result<Vec<u32>, &str>>()?;
 
-    for item in
-      cursor.matches(&query, tree.root_node(), config.source.as_bytes())
-    {
+    for item in cursor.matches(&query, tree.root_node(), source.as_bytes()) {
       for capture in item
         .captures
         .iter()
@@ -53,13 +51,19 @@ impl Parser {
       {
         let range = capture.node.range();
 
+        let pad = range.start_point.row.to_string().len() + 1;
+
         println!(
-          "[Line: {}, Col: {}] {} - {}: `{}`",
+          "{}:{}:{}: {} - {}\n{}|\n{} | {}\n{}|",
+          config.path.display(),
           range.start_point.row,
           range.start_point.column,
           config.name,
           config.rule.message,
-          &config.source[range.start_byte..range.end_byte]
+          format_args!("{:1$}", " ", pad),
+          range.start_point.row,
+          &source[range.start_byte..range.end_byte],
+          format_args!("{:1$}", " ", pad),
         );
       }
     }
