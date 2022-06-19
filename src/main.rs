@@ -13,8 +13,6 @@ mod rule;
 mod walker;
 
 fn main() {
-  env::remove_var("RUST_BACKTRACE");
-
   if let Err(error) = Arguments::parse().run() {
     eprintln!("error: {error}");
     process::exit(1);

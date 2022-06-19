@@ -18,6 +18,8 @@ rules:
   <rule-name>:
     message: <message>
     query: <query>
-    captures: <captures>
+    captures:
+      - <capture>
+      ...
   ...
 ```
