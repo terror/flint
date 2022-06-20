@@ -20,6 +20,8 @@ impl Parser {
   pub(crate) fn query(&mut self, config: QueryConfig) -> Result {
     let source = fs::read_to_string(config.path.clone())?;
 
+    let tree = self.parse(&source, None).ok_or("Failed to parse source")?;
+
     let query = Query::new(
       self
         .parser
@@ -27,10 +29,6 @@ impl Parser {
         .ok_or("Failed to retrieve parser language")?,
       &config.rule.query,
     )?;
-
-    let tree = self.parse(&source, None).ok_or("Failed to parse source")?;
-
-    let mut cursor = QueryCursor::new();
 
     let captures = config
       .rule
@@ -43,31 +41,33 @@ impl Parser {
       })
       .collect::<Result<Vec<u32>, &str>>()?;
 
-    for item in cursor.matches(&query, tree.root_node(), source.as_bytes()) {
-      for capture in item
-        .captures
-        .iter()
-        .filter(|capture| captures.contains(&capture.index))
-      {
-        let range = capture.node.range();
+    QueryCursor::new()
+      .matches(&query, tree.root_node(), source.as_bytes())
+      .for_each(|item| {
+        item
+          .captures
+          .iter()
+          .filter(|capture| captures.contains(&capture.index))
+          .for_each(|capture| {
+            let range = capture.node.range();
 
-        let pad = range.start_point.row.to_string().len() + 1;
+            let padding = range.start_point.row.to_string().len() + 1;
 
-        println!(
-          "{}:{}:{}: {} - {}\n{}|\n{} | {}{}\n{}|",
-          format!("{}", config.path.display()).yellow(),
-          format!("{}", range.start_point.row).bold(),
-          format!("{}", range.start_point.column).bold(),
-          config.name,
-          config.rule.message,
-          format_args!("{:1$}", " ", pad),
-          range.start_point.row,
-          format_args!("{:1$}", " ", range.start_point.column),
-          &source[range.start_byte..range.end_byte],
-          format_args!("{:1$}", " ", pad),
-        );
-      }
-    }
+            println!(
+              "{}:{}:{}: {} - {}\n{}|\n{} | {}{}\n{}|",
+              format!("{}", config.path.display()).yellow(),
+              format!("{}", range.start_point.row).bold(),
+              format!("{}", range.start_point.column).bold(),
+              config.name,
+              config.rule.message,
+              format_args!("{:1$}", " ", padding),
+              range.start_point.row,
+              format_args!("{:1$}", " ", range.start_point.column),
+              &source[range.start_byte..range.end_byte],
+              format_args!("{:1$}", " ", padding),
+            );
+          });
+      });
 
     Ok(())
   }
