@@ -29,15 +29,7 @@ impl Arguments {
         checkers
           .iter()
           .filter(|checker| checker.language == language)
-          .try_for_each(|checker| {
-            checker.rules.iter().try_for_each(|rule| {
-              Parser::new(checker.language.clone())?.query(QueryConfig {
-                name: rule.0,
-                path: path.clone(),
-                rule: rule.1.clone(),
-              })
-            })
-          })
+          .try_for_each(|checker| checker.check(&path))
       })
   }
 }

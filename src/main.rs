@@ -13,6 +13,7 @@ mod rule;
 mod walker;
 
 fn main() {
+  env::remove_var("TEST");
   if let Err(error) = Arguments::parse().run() {
     eprintln!("{}: {error}", "error".red());
     process::exit(1);
