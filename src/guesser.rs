@@ -3,7 +3,6 @@ use crate::common::*;
 #[derive(Debug)]
 pub(crate) struct Guesser {
   path: PathBuf,
-  // TODO: use for checking shebangs
   _source: String,
 }
 
@@ -21,7 +20,7 @@ impl Guesser {
       Some(extension) => self.from_extension(
         extension
           .to_str()
-          .ok_or("Failed to convert OsStr into &str")?,
+          .ok_or("Failed to convert OsStr into str")?,
       ),
       None => None,
     })
