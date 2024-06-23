@@ -11,25 +11,27 @@ impl Arguments {
     Walker::new(self.walker_options)?
       .files()
       .try_for_each(|path| {
-        let language = Guesser::new(path.clone())?
-          .guess()?
-          .ok_or("Unsupported file type")?;
+        let guesser = Guesser::new(path.clone())?;
 
-        let sources = Config::load()?
-          .checkers
-          .iter()
-          .map(|path| fs::read_to_string(&path.expand()))
-          .collect::<Result<Vec<_>, _>>()?;
+        if let Some(language) = guesser.guess()? {
+          let sources = Config::load()?
+            .checkers
+            .iter()
+            .map(|path| fs::read_to_string(&path.expand()))
+            .collect::<Result<Vec<_>, _>>()?;
 
-        let checkers = sources
-          .iter()
-          .map(|source| serde_yaml::from_str::<Checker>(source))
-          .collect::<Result<Vec<Checker>, _>>()?;
+          let checkers = sources
+            .iter()
+            .map(|source| serde_yaml::from_str::<Checker>(source))
+            .collect::<Result<Vec<Checker>, _>>()?;
 
-        checkers
-          .iter()
-          .filter(|checker| checker.language == language)
-          .try_for_each(|checker| checker.check(&path))
+          return checkers
+            .iter()
+            .filter(|checker| checker.language == language)
+            .try_for_each(|checker| checker.check(&path));
+        }
+
+        Ok(())
       })
   }
 }

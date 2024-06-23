@@ -10,6 +10,7 @@ mod parser;
 mod path_ext;
 mod query_config;
 mod rule;
+mod severity;
 mod walker;
 
 fn main() {

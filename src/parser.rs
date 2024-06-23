@@ -54,12 +54,10 @@ impl Parser {
             let padding = range.start_point.row.to_string().len() + 1;
 
             println!(
-              "{}:{}:{}: {} - {}\n{}|\n{} | {}{}\n{}|",
-              format!("{}", config.path.display()).yellow(),
-              format!("{}", range.start_point.row).bold(),
-              format!("{}", range.start_point.column).bold(),
-              config.name,
+              "{}: {}\n --> {}\n{}|\n{} | {}{}\n{}|",
+              "warning".yellow(),
               config.rule.message,
+              config.path.display(),
               format_args!("{:1$}", " ", padding),
               range.start_point.row,
               format_args!("{:1$}", " ", range.start_point.column),

@@ -15,5 +15,8 @@ tree-sitter = "0.20.6"
 walkdir = "2.3.2"
 xdg = "2.4.1"
 
+[dev-dependencies]
+executable-path = "1.0.0"
+
 [build-dependencies]
 cc = "1.0.73"

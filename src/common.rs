@@ -32,6 +32,7 @@ pub(crate) use crate::{
   path_ext::PathExt,
   query_config::QueryConfig,
   rule::Rule,
+  severity:: Severity,
   walker::{Walker, WalkerOptions},
 };
 
