@@ -51,19 +51,35 @@ impl Parser {
           .for_each(|capture| {
             let range = capture.node.range();
 
-            let padding = range.start_point.row.to_string().len() + 1;
-
             println!(
-              "{}: {}\n --> {}\n{}|\n{} | {}{}\n{}|",
-              "warning".yellow(),
+              "{} {} [{}]",
+              config.rule.severity.style(),
               config.rule.message,
-              config.path.display(),
-              format_args!("{:1$}", " ", padding),
-              range.start_point.row,
-              format_args!("{:1$}", " ", range.start_point.column),
-              &source[range.start_byte..range.end_byte],
-              format_args!("{:1$}", " ", padding),
+              config.rule.category
             );
+
+            println!(" --> {}", config.path.display());
+            println!("     |");
+
+            let line_start =
+              source[..range.start_byte].rfind('\n').map_or(0, |i| i + 1);
+
+            let line_end = source[range.end_byte..]
+              .find('\n')
+              .map_or(source.len(), |i| i + range.end_byte);
+
+            let full_line = &source[line_start..line_end];
+
+            println!("{:4} | {}", range.start_point.row + 1, full_line);
+
+            let caret_start = range.start_point.column;
+            let caret_length = range.end_byte - range.start_byte;
+
+            let mut underline = String::from(" ".repeat(caret_start));
+            underline.push_str(&"^".repeat(caret_length));
+
+            println!("     | {}", style(underline).blue());
+            println!();
           });
       });
 

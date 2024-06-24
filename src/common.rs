@@ -1,10 +1,12 @@
-pub(crate) use std::{collections::HashMap, env, fs, path::PathBuf, process};
+pub(crate) use std::{collections::HashMap, fs, path::PathBuf, process};
 
 pub(crate) use {
   clap::Parser as Clap,
   colored::*,
+  console::style,
   dirs::home_dir,
   serde::Deserialize,
+  std::fmt::{self, Display, Formatter},
   tree_sitter::{
     Language as TreeSitterLanguage, Parser as TreeSitterParser, Query,
     QueryCursor, Tree,
@@ -32,7 +34,7 @@ pub(crate) use crate::{
   path_ext::PathExt,
   query_config::QueryConfig,
   rule::Rule,
-  severity:: Severity,
+  severity::Severity,
   walker::{Walker, WalkerOptions},
 };
 

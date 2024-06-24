@@ -1,0 +1,142 @@
+name: Rust
+
+language: rust
+
+rules:
+  env_string_literals:
+    severity: warn
+    category: style
+    message: Calls to (std::|)env::(var|remove_var) should not use string literals
+    query: |
+      ((call_expression
+        function: (_) @function
+        arguments: (arguments (string_literal))) @raise
+      (#match? @function "(std::|)env::(var|remove_var)"))
+    captures:
+      - raise
+
+  cast_abs_to_unsigned:
+    severity: deny
+    category: correctness
+    message: Shouldn't cast `abs()` to unsigned
+    query: |
+      (let_declaration
+        (type_cast_expression
+          (call_expression) @call
+          (primitive_type) @type
+          (#match? @call "abs")
+          (#match? @type "u8|u16|u32|u64")
+        )
+      ) @raise
+    captures:
+      - raise
+
+  unwrap_on_result:
+    severity: warn
+    category: error_handling
+    message: Avoid using `unwrap()` on `Result` types
+    query: |
+      (call_expression
+        function: (field_expression
+          field: (field_identifier) @unwrap)
+        (#eq? @unwrap "unwrap")
+        (#match? @unwrap "unwrap"))
+    captures:
+      - unwrap
+
+  println_in_library_code:
+    severity: warn
+    category: style
+    message: Avoid using `println!` in library code
+    query: |
+      (macro_invocation
+        macro: (identifier) @print
+        (#eq? @print "println"))
+    captures:
+      - print
+
+  empty_enum:
+    severity: warn
+    category: style
+    message: Avoid empty enums
+    query: |
+      (enum_item
+        body: (enum_variant_list) @body
+        (#eq? @body "{ }"))
+    captures:
+      - body
+
+  too_many_arguments:
+    severity: warn
+    category: complexity
+    message: Function has too many arguments (more than 5)
+    query: |
+      (function_item
+        parameters: (parameters) @params
+        (#match? @params "^([^,]*,){5,}"))
+    captures:
+      - params
+
+  unhandled_results:
+    severity: deny
+    category: error_handling
+    message: Unhandled Result in a function that doesn't return Result
+    query: |
+      (function_item
+        body: (block
+          (expression_statement
+            (call_expression) @call))
+        (#match? @call "^(std::)?(fs|io|process)::"))
+    captures:
+      - call
+
+  large_numeric_literals:
+    severity: warn
+    category: readability
+    message: Large numeric literals should use underscores for readability
+    query: |
+      (integer_literal) @number
+      (#match? @number "^[0-9]{5,}$")
+    captures:
+      - number
+
+  unused_mut:
+    severity: warn
+    category: style
+    message: Variable does not need to be mutable
+    query: |
+      (let_declaration
+        pattern: (identifier) @id
+        (#match? @id "^mut")
+        value: (_) @value
+        (#not-match? @value "^&mut")
+      ) @let_decl
+
+      ;; Check for reassignment
+      (assignment_expression
+        left: (identifier) @assign_id
+        (#eq? @assign_id @id))
+
+      ;; Check for compound assignment (+=, -=, etc.)
+      (compound_assignment_expr
+        left: (identifier) @compound_id
+        (#eq? @compound_id @id))
+
+      ;; Check for method calls
+      (call_expression
+        function: (field_expression
+          value: (identifier) @method_id)
+        (#eq? @method_id @id))
+
+      ;; Check for taking mutable reference
+      (reference_expression
+        (mutable_specifier)
+        value: (identifier) @ref_id
+        (#eq? @ref_id @id))
+
+    captures:
+      - let_decl
+      - assign_id
+      - compound_id
+      - method_id
+      - ref_id
