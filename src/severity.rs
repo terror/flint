@@ -1,5 +1,3 @@
-use console::StyledObject;
-
 use crate::common::*;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]

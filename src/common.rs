@@ -3,7 +3,7 @@ pub(crate) use std::{collections::HashMap, fs, path::PathBuf, process};
 pub(crate) use {
   clap::Parser as Clap,
   colored::*,
-  console::style,
+  console::{style, StyledObject},
   dirs::home_dir,
   serde::Deserialize,
   std::fmt::{self, Display, Formatter},
